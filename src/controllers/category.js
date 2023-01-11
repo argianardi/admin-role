@@ -1,7 +1,7 @@
 const models = require("../configs/models/index");
 const controllerCategory = {};
 
-// post request
+// post category request
 controllerCategory.post = async (req, res) => {
   const { category_name, mitra_price, client_price, description, admin_id } =
     req.body;
@@ -26,6 +26,30 @@ controllerCategory.post = async (req, res) => {
     });
   } catch (error) {
     res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+// get all category request
+controllerCategory.getAll = async (req, res) => {
+  try {
+    const categories = await models.category.findAll();
+    if (categories.length > 0) {
+      res.status(200).json({
+        succes: true,
+        message: "All categories successfully obtained",
+        data: categories,
+      });
+    } else {
+      res.status(200).json({
+        succes: true,
+        message: "The Categories not found",
+      });
+    }
+  } catch (error) {
+    res.status(404).json({
+      succes: false,
       message: error.message,
     });
   }
