@@ -4,6 +4,7 @@ const compression = require("compression");
 const helmet = require("helmet");
 const cors = require("cors");
 require("dotenv").config();
+const categoryRoutes = require("./routes/category");
 
 // initialize express
 const app = express();
@@ -16,9 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // routes
-app.get("/", (req, res) => {
-  res.send("Initialize project using express");
-});
+app.use("/categories", categoryRoutes);
 
 // server listening
 const PORT = process.env.PORT || 5555;
