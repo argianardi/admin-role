@@ -91,4 +91,24 @@ controllerCategory.put = async (req, res) => {
   }
 };
 
+// delete request
+controllerCategory.delete = async (req, res) => {
+  try {
+    const category = await models.category.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+    res.status(200).json({
+      success: true,
+      message: "data deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "500 internal server error",
+    });
+  }
+};
+
 module.exports = controllerCategory;
