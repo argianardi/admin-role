@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // routes
-app.use("/categories", categoryRoutes);
+app.use("/", categoryRoutes);
 
 // server listening
 const PORT = process.env.PORT || 5555;
