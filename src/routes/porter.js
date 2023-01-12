@@ -11,4 +11,7 @@ router.get("/porters", controllers.porter.getAll);
 // get one porter by id request
 router.get("/porter/:id", controllers.porter.getOnePorter);
 
+// put porter request
+router.put("/porter/:id", controllers.porter.put);
+
 module.exports = router;

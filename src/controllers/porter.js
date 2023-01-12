@@ -109,4 +109,51 @@ controllerPorter.getOnePorter = async (req, res) => {
   }
 };
 
+// put porter request
+controllerPorter.put = async (req, res) => {
+  const { name, email, password, no_telp, provinsi, kota, kecamatan, jalan } =
+    req.body;
+
+  if (
+    !(
+      name &&
+      email &&
+      password &&
+      no_telp &&
+      provinsi &&
+      kota &&
+      kecamatan &&
+      jalan
+    )
+  ) {
+    return res.status(400).json({
+      message: "Some input are required",
+    });
+  }
+
+  try {
+    const porter = await models.porter.update(
+      {
+        name: name,
+        email: email,
+        password: password,
+        no_telp: no_telp,
+        provinsi: provinsi,
+        kota: kota,
+        kecamatan: kecamatan,
+        jalan: jalan,
+      },
+      { where: { id: req.params.id } }
+    );
+    res.status(200).json({
+      success: true,
+      message: "The porter updated successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "500 internal server error",
+    });
+  }
+};
+
 module.exports = controllerPorter;
