@@ -8,6 +8,7 @@ const categoryRoutes = require("./routes/category");
 const porterRouters = require("./routes/porter");
 const mitraRouters = require("./routes/mitra");
 const productRouters = require("./routes/product");
+const adminRouters = require("./routes/admin");
 
 // initialize express
 const app = express();
@@ -24,6 +25,7 @@ app.use("/", categoryRoutes);
 app.use("/", porterRouters);
 app.use("/", mitraRouters);
 app.use("/", productRouters);
+app.use("/", adminRouters);
 
 // server listening
 const PORT = process.env.PORT || 5555;

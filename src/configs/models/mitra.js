@@ -10,9 +10,9 @@ const mitra = db.define(
       allowNul: false,
       primaryKey: true,
     },
-    mitra_name: { type: Sequelize.STRING, unique: "mitra_name" },
+    mitra_name: { type: Sequelize.STRING },
     mitra_owner: { type: Sequelize.STRING },
-    email: { type: Sequelize.STRING },
+    email: { type: Sequelize.STRING, unique: "mitra_name" },
     password: { type: Sequelize.STRING },
     role: { type: Sequelize.STRING, defaultValue: "mitra" },
     image: { type: Sequelize.STRING },
@@ -37,5 +37,4 @@ db.sync({ alter: true })
     console.log("Unable to create Mitra table:", error.message);
   });
 
-// export table
 module.exports = mitra;

@@ -11,7 +11,7 @@ const porter = db.define(
       primaryKey: true,
     },
     name: { type: Sequelize.STRING },
-    email: { type: Sequelize.STRING },
+    email: { type: Sequelize.STRING, unique: "email" },
     password: { type: Sequelize.STRING },
     role: { type: Sequelize.STRING, defaultValue: "porter" },
     no_telp: { type: Sequelize.STRING },
