@@ -7,6 +7,7 @@ require("dotenv").config();
 const categoryRoutes = require("./routes/category");
 const porterRouters = require("./routes/porter");
 const mitraRouters = require("./routes/mitra");
+const productRouters = require("./routes/product");
 
 // initialize express
 const app = express();
@@ -22,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/", categoryRoutes);
 app.use("/", porterRouters);
 app.use("/", mitraRouters);
+app.use("/", productRouters);
 
 // server listening
 const PORT = process.env.PORT || 5555;
