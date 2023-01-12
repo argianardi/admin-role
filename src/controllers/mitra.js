@@ -59,4 +59,29 @@ controllerMitra.post = async (req, res) => {
   }
 };
 
+// get All mitra request
+controllerMitra.getAll = async (req, res) => {
+  try {
+    const mitras = await models.mitra.findAll();
+    if (mitras.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "All mitra successfully obtained",
+        data: mitras,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "The Mitra not found",
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "500 internal server error",
+    });
+  }
+};
+
 module.exports = controllerMitra;
