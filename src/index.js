@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 require("dotenv").config();
 const categoryRoutes = require("./routes/category");
+const porterRouters = require("./routes/porter");
 
 // initialize express
 const app = express();
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // routes
 app.use("/", categoryRoutes);
+app.use("/", porterRouters);
 
 // server listening
 const PORT = process.env.PORT || 5555;
