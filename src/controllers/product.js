@@ -20,10 +20,35 @@ controllerProduct.post = async (req, res) => {
       admin_id: admin_id,
     });
     res.status(201).json({
+      success: true,
       message: "The product created successfully",
     });
   } catch (error) {
     res.status(500).json({
+      message: "500 internal server error",
+    });
+  }
+};
+
+// get all products request
+controllerProduct.getAll = async (req, res) => {
+  try {
+    const products = await models.product.findAll();
+    if (products.length > 0) {
+      res.status(200).json({
+        succes: true,
+        message: "All products successfully obtained",
+        data: products,
+      });
+    } else {
+      res.status(200).json({
+        succes: true,
+        message: "The products not found",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      succes: false,
       message: "500 internal server error",
     });
   }
