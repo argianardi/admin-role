@@ -54,4 +54,32 @@ controllerProduct.getAll = async (req, res) => {
   }
 };
 
+// get one product by id request
+controllerProduct.getOneProduct = async (req, res) => {
+  try {
+    const product = await models.product.findAll({
+      where: { id: req.params.id },
+    });
+
+    if (product.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "The product successfully obtained",
+        data: product,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "The product not found",
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "500 internal server error",
+    });
+  }
+};
+
 module.exports = controllerProduct;
