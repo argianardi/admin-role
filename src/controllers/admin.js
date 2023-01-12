@@ -27,6 +27,54 @@ controllerAdmin.post = async (req, res) => {
   }
 };
 
+// get one admin by id
+controllerAdmin.getOneAdmin = async (req, res) => {
+  await models.admin.hasMany(models.product, {
+    sourceKey: "id",
+    foreignKey: { name: "admin_id" },
+  });
+
+  await models.admin.hasMany(models.category, {
+    sourceKey: "id",
+    foreignKey: { name: "admin_id" },
+  });
+
+  await models.admin.hasMany(models.porter, {
+    sourceKey: "id",
+    foreignKey: { name: "admin_id" },
+  });
+
+  try {
+    const admin = await models.admin.findAll({
+      include: [
+        { model: models.product },
+        { model: models.category },
+        { model: models.porter },
+      ],
+      where: { id: req.params.id },
+    });
+
+    if (admin.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "The admin successfully obtained",
+        data: admin,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "The admin not found",
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "500 internal server error",
+    });
+  }
+};
+
 // put one admin by id request
 controllerAdmin.put = async (req, res) => {
   const { name, email, password } = req.body;
