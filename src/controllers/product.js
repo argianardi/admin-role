@@ -82,4 +82,41 @@ controllerProduct.getOneProduct = async (req, res) => {
   }
 };
 
+// put one product by id request
+controllerProduct.put = async (req, res) => {
+  const { product_name, image, stock, price, description } = req.body;
+  if (!(product_name && image && stock && price && description)) {
+    return res.status(400).json({
+      message: "Some input are required",
+    });
+  }
+
+  try {
+    const product = await models.product.update(
+      {
+        product_name: product_name,
+        image: image,
+        stock: stock,
+        price: price,
+        description: description,
+      },
+      {
+        where: {
+          id: req.params.id,
+        },
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Succes updated",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "500 internal server error",
+    });
+  }
+};
+
 module.exports = controllerProduct;
