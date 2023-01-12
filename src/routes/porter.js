@@ -14,4 +14,7 @@ router.get("/porter/:id", controllers.porter.getOnePorter);
 // put porter request
 router.put("/porter/:id", controllers.porter.put);
 
+// delete porter request
+router.delete("/porter/:id", controllers.porter.delete);
+
 module.exports = router;

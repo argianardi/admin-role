@@ -156,4 +156,23 @@ controllerPorter.put = async (req, res) => {
   }
 };
 
+// delete request
+controllerPorter.delete = async (req, res) => {
+  try {
+    const porter = await models.porter.destroy({
+      where: { id: req.params.id },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "The porter deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: true,
+      message: "500 internal server error",
+    });
+  }
+};
+
 module.exports = controllerPorter;
