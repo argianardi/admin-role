@@ -63,13 +63,41 @@ controllerPorter.getAll = async (req, res) => {
     if (porters.length > 0) {
       res.status(200).json({
         success: true,
-        message: "All categories successfully obtained",
+        message: "All porters successfully obtained",
         data: porters,
       });
     } else {
       res.status(200).json({
         success: true,
         message: "Porters not found",
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "500 internal server error",
+    });
+  }
+};
+
+// get one porter by id request
+controllerPorter.getOnePorter = async (req, res) => {
+  try {
+    const porter = await models.porter.findAll({
+      where: { id: req.params.id },
+    });
+
+    if (porter.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "The porter successfully obtained",
+        data: porter,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "The porter not found",
         data: [],
       });
     }
