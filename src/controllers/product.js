@@ -119,4 +119,23 @@ controllerProduct.put = async (req, res) => {
   }
 };
 
+// delete request
+controllerProduct.delete = async (req, res) => {
+  try {
+    const product = await models.product.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+    res.status(200).json({
+      success: true,
+      message: "data deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "500 internal server error",
+    });
+  }
+};
 module.exports = controllerProduct;

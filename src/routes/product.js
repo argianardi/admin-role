@@ -14,4 +14,7 @@ router.get("/product/:id", controllers.product.getOneProduct);
 //  put one product by id request
 router.put("/product/:id", controllers.product.put);
 
+// delete one product by id request
+router.delete("/product/:id", controllers.product.delete);
+
 module.exports = router;
