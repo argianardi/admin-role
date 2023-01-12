@@ -84,4 +84,32 @@ controllerMitra.getAll = async (req, res) => {
   }
 };
 
+// put status mitra
+controllerMitra.put = async (req, res) => {
+  const { status_kemitraan } = req.body;
+
+  if (!status_kemitraan) {
+    return res.status(400).json({
+      message: "Some input are required",
+    });
+  }
+
+  try {
+    const porter = await models.mitra.update(
+      {
+        status_kemitraan: status_kemitraan,
+      },
+      { where: { id: req.params.id } }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Updated successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "500 internal server error",
+    });
+  }
+};
+
 module.exports = controllerMitra;
