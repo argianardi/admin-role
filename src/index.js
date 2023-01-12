@@ -6,6 +6,7 @@ const cors = require("cors");
 require("dotenv").config();
 const categoryRoutes = require("./routes/category");
 const porterRouters = require("./routes/porter");
+const mitraRouters = require("./routes/mitra");
 
 // initialize express
 const app = express();
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // routes
 app.use("/", categoryRoutes);
 app.use("/", porterRouters);
+app.use("/", mitraRouters);
 
 // server listening
 const PORT = process.env.PORT || 5555;
