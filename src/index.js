@@ -5,13 +5,11 @@ const helmet = require("helmet");
 const cors = require("cors");
 require("dotenv").config();
 const controller = require("./controllers/index");
-// const fileReq = require("./routes/fileReq");
-
-// const categoryRoutes = require("./routes/category");
-// const porterRouters = require("./routes/porter");
-// const mitraRouters = require("./routes/mitra");
+const categoryRoutes = require("./routes/category");
+const porterRouters = require("./routes/porter");
+const mitraRouters = require("./routes/mitra");
 const productRouters = require("./routes/product");
-// const adminRouters = require("./routes/admin");
+const adminRouters = require("./routes/admin");
 
 // initialize express
 const app = express();
@@ -24,14 +22,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // routes
-// app.use("/", categoryRoutes);
-// app.use("/", porterRouters);
-// app.use("/", mitraRouters);
+app.use("/", adminRouters);
+app.use("/", categoryRoutes);
+app.use("/", porterRouters);
+app.use("/", mitraRouters);
+app.use("/", controller.mitra.post);
 app.use("/", productRouters);
 app.use("/", controller.product.post);
 app.use("/", controller.product.put);
-
-// app.use("/", adminRouters);
 
 // server listening
 const PORT = process.env.PORT || 5555;
