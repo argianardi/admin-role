@@ -4,6 +4,7 @@ const compression = require("compression");
 const helmet = require("helmet");
 const cors = require("cors");
 require("dotenv").config();
+const controller = require("./controllers/index");
 const categoryRoutes = require("./routes/category");
 const porterRouters = require("./routes/porter");
 const mitraRouters = require("./routes/mitra");
@@ -21,11 +22,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // routes
+app.use("/", adminRouters);
 app.use("/", categoryRoutes);
 app.use("/", porterRouters);
 app.use("/", mitraRouters);
+app.use("/", controller.mitra.post);
 app.use("/", productRouters);
-app.use("/", adminRouters);
+app.use("/", controller.product.post);
+app.use("/", controller.product.put);
 
 // server listening
 const PORT = process.env.PORT || 5555;
