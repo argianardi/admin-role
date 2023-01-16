@@ -10,7 +10,8 @@ const porterRouters = require("./routes/porter");
 const mitraRouters = require("./routes/mitra");
 const productRouters = require("./routes/product");
 const adminRouters = require("./routes/admin");
-const authAdminRouters = require("./routes/authAdmin");
+const authAdminRouters = require("./routes/adminAuth");
+const validateAuth = require("./middlewares/validateAuth");
 
 // initialize express
 const app = express();
@@ -29,8 +30,8 @@ app.use("/", porterRouters);
 app.use("/", mitraRouters);
 app.use("/", controller.mitra.post);
 app.use("/", productRouters);
-app.use("/", controller.product.post);
-app.use("/", controller.product.put);
+app.use("/", validateAuth.isAuthenticated, controller.product.post);
+app.use("/", validateAuth.isAuthenticated, controller.product.put);
 app.use("/", authAdminRouters);
 
 // server listening
