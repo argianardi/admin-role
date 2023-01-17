@@ -1,13 +1,15 @@
 const models = require("../configs/models/index");
 const controllerCategory = {};
+const jwt = require("jsonwebtoken");
 
 // post category request
 controllerCategory.post = async (req, res) => {
-  const { category_name, mitra_price, client_price, description, admin_id } =
-    req.body;
-  if (
-    !(category_name && mitra_price && client_price && description && admin_id)
-  ) {
+  const token = req.headers.authorization.split(" ")[1];
+  const verifiedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  const admin_id = verifiedToken.id;
+
+  const { category_name, mitra_price, client_price, description } = req.body;
+  if (!(category_name && mitra_price && client_price && description)) {
     return res.status(400).json({
       message: "Some input are required",
     });
