@@ -1,19 +1,15 @@
 const models = require("../configs/models/index");
 const controllerPorter = {};
+const jwt = require("jsonwebtoken");
 
 // post porter
 controllerPorter.post = async (req, res) => {
-  const {
-    name,
-    email,
-    password,
-    no_telp,
-    provinsi,
-    kota,
-    kecamatan,
-    jalan,
-    admin_id,
-  } = req.body;
+  const token = req.headers.authorization.split(" ")[1];
+  const verifiedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  const admin_id = verifiedToken.id;
+
+  const { name, email, password, no_telp, provinsi, kota, kecamatan, jalan } =
+    req.body;
 
   if (
     !(
@@ -24,8 +20,7 @@ controllerPorter.post = async (req, res) => {
       provinsi &&
       kota &&
       kecamatan &&
-      jalan &&
-      admin_id
+      jalan
     )
   ) {
     return res.status(400).json({
