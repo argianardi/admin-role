@@ -9,6 +9,7 @@
   "author": "argian ardi",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.2.2",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
     "cloudinary": "^1.33.0",
