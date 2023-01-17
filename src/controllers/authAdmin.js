@@ -1,9 +1,9 @@
-const models = require("../configs/models/index"); //import model
-const controllersAuthAdmin = {}; //assign users controllers
+const models = require("../configs/models/index");
+const controllersAdminAuth = {};
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-controllersAuthAdmin.login = async (req, res) => {
+controllersAdminAuth.login = async (req, res) => {
   // assign reques body
   const { email, password } = req.body;
   if (!(email && password)) {
@@ -16,7 +16,6 @@ controllersAuthAdmin.login = async (req, res) => {
     const admin = await models.admin.findAll({
       where: { email },
     });
-    console.log(admin);
     if (admin.length > 0) {
       const comparePassword = bcrypt.compareSync(password, admin[0].password);
       if (comparePassword) {
@@ -61,4 +60,43 @@ controllersAuthAdmin.login = async (req, res) => {
   }
 };
 
-module.exports = controllersAuthAdmin;
+controllersAdminAuth.register = async (req, res) => {
+  const { name, email, password } = req.body;
+  if (!(name && email && password)) {
+    return res.status(400).json({
+      message: "Some input are required",
+    });
+  }
+
+  const admin = await models.admin.findAll({
+    where: { email },
+  });
+  console.log(admin);
+  if (admin.length > 0) {
+    return res
+      .status(201)
+      .json({ message: "The email is already registered!!" });
+  } else {
+    // bcrypt
+    const salt = bcrypt.genSaltSync(10);
+    const passwordHashed = await bcrypt.hashSync(password, salt);
+
+    // post request use sequelizes
+    try {
+      const admin = await models.admin.create({
+        name,
+        password: passwordHashed,
+        email,
+      });
+      res.status(201).json({
+        message: "Registered successfully",
+      });
+    } catch (error) {
+      res.status(404).json({
+        message: error.message,
+      });
+    }
+  }
+};
+
+module.exports = controllersAdminAuth;
