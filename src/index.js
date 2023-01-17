@@ -30,8 +30,8 @@ app.use("/", porterRouters);
 app.use("/", mitraRouters);
 app.use("/", controller.mitra.post);
 app.use("/", productRouters);
-app.use("/", validateAuth.isAuthenticated, controller.product.post);
-app.use("/", validateAuth.isAuthenticated, controller.product.put);
+app.use("/product", validateAuth.isAuthenticated, controller.product.post);
+app.use("/product", validateAuth.isAuthenticated, controller.product.put);
 app.use("/", authAdminRouters);
 
 // server listening
