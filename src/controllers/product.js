@@ -4,6 +4,7 @@ const upload = require("../utils/multer");
 const models = require("../configs/models/index");
 const app = express();
 const controllerProduct = {};
+const jwt = require("jsonwebtoken");
 
 // get all products request
 controllerProduct.getAll = async (req, res) => {
@@ -59,22 +60,17 @@ controllerProduct.getOneProduct = async (req, res) => {
 
 // post request
 controllerProduct.post = app.post(
-  "/product",
+  "/",
   upload.single("image"),
   async (req, res) => {
-    const { product_name, stock, price, description, admin_id } = req.body;
+    const token = req.headers.authorization.split(" ")[1];
+    const verifiedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const admin_id = verifiedToken.id;
+
+    const { product_name, stock, price, description } = req.body;
     const uploadImage = await cloudinary.uploader.upload(req.file.path);
 
-    if (
-      !(
-        product_name &&
-        uploadImage &&
-        stock &&
-        price &&
-        description &&
-        admin_id
-      )
-    ) {
+    if (!(product_name && uploadImage && stock && price && description)) {
       return res.status(400).json({
         message: "Some input are required",
       });
@@ -103,11 +99,10 @@ controllerProduct.post = app.post(
 
 // put one product by id request
 controllerProduct.put = app.put(
-  "/product/:id",
+  "/:id",
   upload.single("image"),
   async (req, res) => {
     const { product_name, stock, price, description } = req.body;
-
     const uploadImage = await cloudinary.uploader.upload(req.file.path);
 
     if (!(product_name && uploadImage && stock && price && description)) {
