@@ -1,4 +1,4 @@
-const models = require("../../configs/models/index");
+const models = require("../configs/models/index");
 const controllersAdminAuth = {};
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
