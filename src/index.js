@@ -12,6 +12,7 @@ const productRouters = require("./routes/product");
 const adminRouters = require("./routes/admin");
 const authAdminRouters = require("./routes/adminAuth");
 const validateAuth = require("./middlewares/validateAuth");
+const shippingCostRouters = require("./routes/shippingcost");
 
 // initialize express
 const app = express();
@@ -28,11 +29,13 @@ app.use("/", adminRouters);
 app.use("/", categoryRoutes);
 app.use("/", porterRouters);
 app.use("/", mitraRouters);
-app.use("/", controller.mitra.post);
+app.use("/mitra", validateAuth.isAuthenticated, controller.mitra.post);
+app.use("/mitra", validateAuth.isAuthenticated, controller.mitra.put);
 app.use("/", productRouters);
 app.use("/product", validateAuth.isAuthenticated, controller.product.post);
 app.use("/product", validateAuth.isAuthenticated, controller.product.put);
 app.use("/", authAdminRouters);
+app.use("/", shippingCostRouters);
 
 // server listening
 const PORT = process.env.PORT || 5555;
