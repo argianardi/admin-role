@@ -17,6 +17,13 @@ router.get(
   controllers.category.getAll
 );
 
+// get one category by id
+router.get(
+  "/category/:id",
+  validateAuth.isAuthenticated,
+  controllers.category.getOneCategory
+);
+
 // put one category by id request
 router.put(
   "/category/:id",
