@@ -1,5 +1,6 @@
 const models = require("../configs/models/index");
 const controllerAdmin = {};
+const bcrypt = require("bcrypt");
 
 // post admin request
 controllerAdmin.post = async (req, res) => {
@@ -10,11 +11,15 @@ controllerAdmin.post = async (req, res) => {
     });
   }
 
+  // bcrypt
+  const salt = bcrypt.genSaltSync(10);
+  const passwordHashed = await bcrypt.hashSync(password, salt);
+
   try {
     const admin = await models.admin.create({
       name: name,
       email: email,
-      password: password,
+      password: passwordHashed,
     });
     res.status(201).json({
       success: true,
@@ -84,12 +89,16 @@ controllerAdmin.put = async (req, res) => {
     });
   }
 
+  // bcrypt
+  const salt = bcrypt.genSaltSync(10);
+  const passwordHashed = await bcrypt.hashSync(password, salt);
+
   try {
     const admin = await models.admin.update(
       {
         name: name,
         email: email,
-        password: password,
+        password: passwordHashed,
       },
       {
         where: {

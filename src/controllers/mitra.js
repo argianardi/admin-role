@@ -30,9 +30,36 @@ controllerMitra.getAll = async (req, res) => {
   }
 };
 
+// get one mitra by id
+controllerMitra.getOneMitra = async (req, res) => {
+  try {
+    const mitras = await models.mitra.findAll({
+      where: { id: req.params.id },
+    });
+    if (mitras.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "All mitra successfully obtained",
+        data: mitras,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "The Mitra not found",
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "500 internal server error",
+    });
+  }
+};
+
 // post mitra
 controllerMitra.post = app.post(
-  "/mitra",
+  "/",
   upload.single("image"),
   async (req, res) => {
     const {
@@ -41,10 +68,10 @@ controllerMitra.post = app.post(
       email,
       password,
       no_telp,
-      provinsi,
-      kota,
-      kecamatan,
-      jalan,
+      province_id,
+      city_id,
+      district,
+      street,
     } = req.body;
 
     const uploadImage = await cloudinary.uploader.upload(req.file.path);
@@ -57,10 +84,10 @@ controllerMitra.post = app.post(
         password &&
         uploadImage &&
         no_telp &&
-        provinsi &&
-        kota &&
-        kecamatan &&
-        jalan
+        province_id &&
+        city_id &&
+        district &&
+        street
       )
     ) {
       return res.status(400).json({
@@ -76,10 +103,10 @@ controllerMitra.post = app.post(
         password: password,
         image: uploadImage.url,
         no_telp: no_telp,
-        provinsi: provinsi,
-        kota: kota,
-        kecamatan: kecamatan,
-        jalan: jalan,
+        province_id: province_id,
+        city_id: city_id,
+        district: district,
+        street: street,
       });
       res.status(201).json({
         success: true,
@@ -94,28 +121,86 @@ controllerMitra.post = app.post(
 );
 
 // put status mitra
-controllerMitra.put = async (req, res) => {
-  const { status_kemitraan } = req.body;
+controllerMitra.put = app.put(
+  "/:id",
+  upload.single("image"),
+  async (req, res) => {
+    const {
+      mitra_name,
+      mitra_owner,
+      email,
+      password,
+      no_telp,
+      province_id,
+      city_id,
+      district,
+      street,
+    } = req.body;
 
-  if (!status_kemitraan) {
-    return res.status(400).json({
-      message: "Some input are required",
-    });
+    const uploadImage = await cloudinary.uploader.upload(req.file.path);
+
+    if (
+      !(
+        mitra_name &&
+        mitra_owner &&
+        email &&
+        password &&
+        uploadImage &&
+        no_telp &&
+        province_id &&
+        city_id &&
+        district &&
+        street
+      )
+    ) {
+      return res.status(400).json({
+        message: "Some input are required",
+      });
+    }
+
+    try {
+      const mitra = await models.mitra.update(
+        {
+          mitra_name: mitra_name,
+          mitra_owner: mitra_owner,
+          email: email,
+          password: password,
+          image: uploadImage.url,
+          no_telp: no_telp,
+          province_id: province_id,
+          city_id: city_id,
+          district: district,
+          street: street,
+        },
+        { where: { id: req.params.id } }
+      );
+      res.status(200).json({
+        success: true,
+        message: "Updated successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+        // "500 internal server error",
+      });
+    }
   }
+);
 
+// delete mitra request
+controllerMitra.delete = async (req, res) => {
   try {
-    const porter = await models.mitra.update(
-      {
-        status_kemitraan: status_kemitraan,
-      },
-      { where: { id: req.params.id } }
-    );
+    const mitra = await models.mitra.destroy({
+      where: { id: req.params.id },
+    });
+
     res.status(200).json({
       success: true,
-      message: "Updated successfully",
+      message: "The porter deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
+      success: true,
       message: "500 internal server error",
     });
   }

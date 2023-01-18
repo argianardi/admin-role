@@ -1,18 +1,22 @@
 const models = require("../configs/models/index");
 const controllerPorter = {};
+const jwt = require("jsonwebtoken");
 
 // post porter
 controllerPorter.post = async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const verifiedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  const admin_id = verifiedToken.id;
+
   const {
     name,
     email,
     password,
     no_telp,
-    provinsi,
-    kota,
-    kecamatan,
-    jalan,
-    admin_id,
+    province_id,
+    city_id,
+    district,
+    street,
   } = req.body;
 
   if (
@@ -21,11 +25,10 @@ controllerPorter.post = async (req, res) => {
       email &&
       password &&
       no_telp &&
-      provinsi &&
-      kota &&
-      kecamatan &&
-      jalan &&
-      admin_id
+      province_id &&
+      city_id &&
+      district &&
+      street
     )
   ) {
     return res.status(400).json({
@@ -35,14 +38,14 @@ controllerPorter.post = async (req, res) => {
 
   try {
     const porter = await models.porter.create({
-      name: name,
-      email: email,
-      password: password,
-      no_telp: no_telp,
-      provinsi: provinsi,
-      kota: kota,
-      kecamatan: kecamatan,
-      jalan: jalan,
+      name,
+      email,
+      password,
+      no_telp,
+      province_id,
+      city_id,
+      district,
+      street,
       admin_id: admin_id,
     });
     res.status(201).json({
@@ -56,7 +59,7 @@ controllerPorter.post = async (req, res) => {
   }
 };
 
-// put get All porters request
+// get All porters request
 controllerPorter.getAll = async (req, res) => {
   try {
     const porters = await models.porter.findAll();
@@ -111,8 +114,16 @@ controllerPorter.getOnePorter = async (req, res) => {
 
 // put porter request
 controllerPorter.put = async (req, res) => {
-  const { name, email, password, no_telp, provinsi, kota, kecamatan, jalan } =
-    req.body;
+  const {
+    name,
+    email,
+    password,
+    no_telp,
+    province_id,
+    city_id,
+    district,
+    street,
+  } = req.body;
 
   if (
     !(
@@ -120,10 +131,10 @@ controllerPorter.put = async (req, res) => {
       email &&
       password &&
       no_telp &&
-      provinsi &&
-      kota &&
-      kecamatan &&
-      jalan
+      province_id &&
+      city_id &&
+      district &&
+      street
     )
   ) {
     return res.status(400).json({
@@ -134,14 +145,14 @@ controllerPorter.put = async (req, res) => {
   try {
     const porter = await models.porter.update(
       {
-        name: name,
-        email: email,
-        password: password,
-        no_telp: no_telp,
-        provinsi: provinsi,
-        kota: kota,
-        kecamatan: kecamatan,
-        jalan: jalan,
+        name,
+        email,
+        password,
+        no_telp,
+        province_id,
+        city_id,
+        district,
+        street,
       },
       { where: { id: req.params.id } }
     );
