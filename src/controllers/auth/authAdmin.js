@@ -37,6 +37,7 @@ controllersAdminAuth.login = async (req, res) => {
               name: admin[0].name,
               email: admin[0].email,
               role: admin[0].role,
+              id: admin[0].id,
             },
           });
         }
