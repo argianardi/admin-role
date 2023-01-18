@@ -57,6 +57,32 @@ controllerCategory.getAll = async (req, res) => {
   }
 };
 
+// get one category by id
+controllerCategory.getOneCategory = async (req, res) => {
+  try {
+    const categories = await models.category.findAll({
+      where: { id: req.params.id },
+    });
+    if (categories.length > 0) {
+      res.status(200).json({
+        succes: true,
+        message: "All categories successfully obtained",
+        data: categories,
+      });
+    } else {
+      res.status(200).json({
+        succes: true,
+        message: "The Categories not found",
+      });
+    }
+  } catch (error) {
+    res.status(404).json({
+      succes: false,
+      message: error.message,
+    });
+  }
+};
+
 // put one category by id request
 controllerCategory.put = async (req, res) => {
   const { category_name, mitra_price, client_price, description } = req.body;
