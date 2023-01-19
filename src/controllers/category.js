@@ -11,7 +11,7 @@ controllerCategory.post = async (req, res) => {
   const { category_name, mitra_price, client_price, description } = req.body;
   if (!(category_name && mitra_price && client_price && description)) {
     return res.status(400).json({
-      message: "Some input are required",
+      message: "Bad request: some input are required",
     });
   }
 
@@ -46,13 +46,13 @@ controllerCategory.getAll = async (req, res) => {
     } else {
       res.status(200).json({
         succes: true,
-        message: "The Categories not found",
+        message: "empty categories data",
       });
     }
   } catch (error) {
-    res.status(404).json({
+    res.status(500).json({
       succes: false,
-      message: error.message,
+      message: "Internal server error",
     });
   }
 };
