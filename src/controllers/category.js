@@ -15,17 +15,16 @@ controllerCategory.post = async (req, res) => {
       message: "Bad request: some input are required",
     });
   }
+
   const category = await models.category.findAll({
     where: { category_name },
   });
 
   if (category.length > 0) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Bad request:The category name has already been used",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Bad request: the category name has already been used",
+    });
   } else {
     try {
       const category = await models.category.create({
@@ -103,34 +102,46 @@ controllerCategory.put = async (req, res) => {
   const { category_name, mitra_price, client_price, description } = req.body;
   if (!(category_name && mitra_price && client_price && description)) {
     return res.status(400).json({
-      message: "Some input are required",
+      success: false,
+      message: "Bad request: some input are required",
     });
   }
 
-  try {
-    const category = await models.category.update(
-      {
-        category_name: category_name,
-        mitra_price: mitra_price,
-        client_price: client_price,
-        description: description,
-      },
-      {
-        where: {
-          id: req.params.id,
-        },
-      }
-    );
+  const category = await models.category.findAll({
+    where: { category_name },
+  });
 
-    res.status(200).json({
-      success: true,
-      message: "Succes updated",
-    });
-  } catch (error) {
-    res.status(500).json({
+  if (category.length > 0) {
+    return res.status(400).json({
       success: false,
-      message: "500 internal server error",
+      message: "Bad request: the category name has already been used",
     });
+  } else {
+    try {
+      const category = await models.category.update(
+        {
+          category_name: category_name,
+          mitra_price: mitra_price,
+          client_price: client_price,
+          description: description,
+        },
+        {
+          where: {
+            id: req.params.id,
+          },
+        }
+      );
+
+      res.status(201).json({
+        success: true,
+        message: "Succes updated",
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
   }
 };
 
