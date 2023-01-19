@@ -155,12 +155,12 @@ controllerCategory.delete = async (req, res) => {
     });
     res.status(200).json({
       success: true,
-      message: "data deleted successfully",
+      message: "Deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "500 internal server error",
+      message: "Internal server error",
     });
   }
 };
