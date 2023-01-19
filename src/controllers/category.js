@@ -11,25 +11,40 @@ controllerCategory.post = async (req, res) => {
   const { category_name, mitra_price, client_price, description } = req.body;
   if (!(category_name && mitra_price && client_price && description)) {
     return res.status(400).json({
+      success: false,
       message: "Bad request: some input are required",
     });
   }
+  const category = await models.category.findAll({
+    where: { category_name },
+  });
 
-  try {
-    const category = await models.category.create({
-      category_name: category_name,
-      mitra_price: mitra_price,
-      client_price: client_price,
-      description: description,
-      admin_id: admin_id,
-    });
-    res.status(201).json({
-      message: "The category added successfully",
-    });
-  } catch (error) {
-    res.status(404).json({
-      message: error.message,
-    });
+  if (category.length > 0) {
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Bad request:The category name has already been used",
+      });
+  } else {
+    try {
+      const category = await models.category.create({
+        category_name: category_name,
+        mitra_price: mitra_price,
+        client_price: client_price,
+        description: description,
+        admin_id: admin_id,
+      });
+      res.status(201).json({
+        success: true,
+        message: "The category added successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
   }
 };
 
