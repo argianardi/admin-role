@@ -11,7 +11,7 @@ const validateAuth = {
     } catch (error) {
       res.status(401).json({
         success: false,
-        message: "Access token invalid",
+        message: "Invalid access token",
       });
     }
   },
