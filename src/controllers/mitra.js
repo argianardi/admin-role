@@ -87,8 +87,18 @@ controllerMitra.post = app.post(
 
 // get All mitra request
 controllerMitra.getAll = async (req, res) => {
+  await models.mitra.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
   try {
-    const mitras = await models.mitra.findAll();
+    const mitras = await models.mitra.findAll({
+      include: [{ model: models.admin }],
+    });
     if (mitras.length > 0) {
       res.status(200).json({
         success: true,
@@ -112,8 +122,17 @@ controllerMitra.getAll = async (req, res) => {
 
 // get one mitra by id
 controllerMitra.getOneMitra = async (req, res) => {
+  await models.mitra.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
   try {
     const mitras = await models.mitra.findAll({
+      include: [{ model: models.admin }],
       where: { id: req.params.id },
     });
     if (mitras.length > 0) {

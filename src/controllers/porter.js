@@ -72,8 +72,18 @@ controllerPorter.post = async (req, res) => {
 
 // get All porters request
 controllerPorter.getAll = async (req, res) => {
+  await models.porter.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
   try {
-    const porters = await models.porter.findAll();
+    const porters = await models.porter.findAll({
+      include: [{ model: models.admin }],
+    });
     if (porters.length > 0) {
       res.status(200).json({
         success: true,
@@ -97,8 +107,17 @@ controllerPorter.getAll = async (req, res) => {
 
 // get one porter by id request
 controllerPorter.getOnePorter = async (req, res) => {
+  await models.porter.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
   try {
     const porter = await models.porter.findAll({
+      include: [{ model: models.admin }],
       where: { id: req.params.id },
     });
 

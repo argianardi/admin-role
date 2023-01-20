@@ -46,8 +46,18 @@ controllerProduct.post = app.post(
 
 // get all products request
 controllerProduct.getAll = async (req, res) => {
+  await models.product.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
   try {
-    const products = await models.product.findAll();
+    const products = await models.product.findAll({
+      include: [{ model: models.admin }],
+    });
     if (products.length > 0) {
       res.status(200).json({
         succes: true,
@@ -71,8 +81,17 @@ controllerProduct.getAll = async (req, res) => {
 
 // get one product by id request
 controllerProduct.getOneProduct = async (req, res) => {
+  await models.product.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
   try {
     const product = await models.product.findAll({
+      include: [{ model: models.admin }],
       where: { id: req.params.id },
     });
 

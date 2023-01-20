@@ -49,8 +49,18 @@ controllerCategory.post = async (req, res) => {
 
 // get all categories request
 controllerCategory.getAll = async (req, res) => {
+  await models.category.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
   try {
-    const categories = await models.category.findAll();
+    const categories = await models.category.findAll({
+      include: [{ model: models.admin }],
+    });
     if (categories.length > 0) {
       res.status(200).json({
         succes: true,
@@ -74,8 +84,16 @@ controllerCategory.getAll = async (req, res) => {
 
 // get one category by id
 controllerCategory.getOneCategory = async (req, res) => {
+  await models.category.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
   try {
     const categories = await models.category.findAll({
+      include: [{ model: models.admin }],
       where: { id: req.params.id },
     });
     if (categories.length > 0) {
