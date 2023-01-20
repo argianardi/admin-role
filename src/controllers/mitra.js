@@ -4,64 +4,17 @@ const upload = require("../utils/multer");
 const models = require("../configs/models/index");
 const app = express();
 const controllerMitra = {};
-
-// get All mitra request
-controllerMitra.getAll = async (req, res) => {
-  try {
-    const mitras = await models.mitra.findAll();
-    if (mitras.length > 0) {
-      res.status(200).json({
-        success: true,
-        message: "All mitra successfully obtained",
-        data: mitras,
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "The Mitra not found",
-        data: [],
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "500 internal server error",
-    });
-  }
-};
-
-// get one mitra by id
-controllerMitra.getOneMitra = async (req, res) => {
-  try {
-    const mitras = await models.mitra.findAll({
-      where: { id: req.params.id },
-    });
-    if (mitras.length > 0) {
-      res.status(200).json({
-        success: true,
-        message: "All mitra successfully obtained",
-        data: mitras,
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "The Mitra not found",
-        data: [],
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "500 internal server error",
-    });
-  }
-};
+const jwt = require("jsonwebtoken");
 
 // post mitra
 controllerMitra.post = app.post(
   "/",
   upload.single("image"),
   async (req, res) => {
+    const token = req.headers.authorization.split(" ")[1];
+    const verifiedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const admin_id = verifiedToken.id;
+
     const {
       mitra_name,
       mitra_owner,
@@ -91,34 +44,98 @@ controllerMitra.post = app.post(
       )
     ) {
       return res.status(400).json({
-        message: "Some input are required",
+        message: "bad request, some input are required",
       });
     }
 
-    try {
-      const mitra = await models.mitra.create({
-        mitra_name: mitra_name,
-        mitra_owner: mitra_owner,
-        email: email,
-        password: password,
-        image: uploadImage.url,
-        no_telp: no_telp,
-        province_id: province_id,
-        city_id: city_id,
-        district: district,
-        street: street,
+    const mitra = await models.mitra.findAll({
+      where: { email },
+    });
+
+    if (mitra.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "bad request, the email has already been used",
       });
-      res.status(201).json({
-        success: true,
-        message: "The mitra added successfully",
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: "500 internal server error",
-      });
+    } else {
+      try {
+        const mitra = await models.mitra.create({
+          mitra_name,
+          mitra_owner,
+          email,
+          password,
+          image: uploadImage.url,
+          no_telp,
+          province_id,
+          city_id,
+          district,
+          street,
+          admin_id,
+        });
+        res.status(201).json({
+          success: true,
+          message: "the mitra added successfully",
+        });
+      } catch (error) {
+        res.status(500).json({
+          message: "internal server error",
+        });
+      }
     }
   }
 );
+
+// get All mitra request
+controllerMitra.getAll = async (req, res) => {
+  try {
+    const mitras = await models.mitra.findAll();
+    if (mitras.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "all mitra successfully obtained",
+        data: mitras,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "empty mitras data",
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "internal server error",
+    });
+  }
+};
+
+// get one mitra by id
+controllerMitra.getOneMitra = async (req, res) => {
+  try {
+    const mitras = await models.mitra.findAll({
+      where: { id: req.params.id },
+    });
+    if (mitras.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "the mitra successfully obtained",
+        data: mitras,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "empty the mitra data",
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "internal server error",
+    });
+  }
+};
 
 // put status mitra
 controllerMitra.put = app.put(
@@ -158,31 +175,49 @@ controllerMitra.put = app.put(
       });
     }
 
-    try {
-      const mitra = await models.mitra.update(
-        {
-          mitra_name: mitra_name,
-          mitra_owner: mitra_owner,
-          email: email,
-          password: password,
-          image: uploadImage.url,
-          no_telp: no_telp,
-          province_id: province_id,
-          city_id: city_id,
-          district: district,
-          street: street,
-        },
-        { where: { id: req.params.id } }
-      );
-      res.status(200).json({
-        success: true,
-        message: "Updated successfully",
+    const mitra = await models.mitra.findAll({
+      where: { email },
+    });
+
+    if (mitra.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "bad request, the email has already been used",
       });
-    } catch (error) {
-      res.status(500).json({
-        message: error.message,
-        // "500 internal server error",
-      });
+    } else {
+      try {
+        const mitra = await models.mitra.update(
+          {
+            mitra_name,
+            mitra_owner,
+            email,
+            password,
+            image: uploadImage.url,
+            no_telp,
+            province_id,
+            city_id,
+            district,
+            street: street,
+          },
+          { where: { id: req.params.id } }
+        );
+
+        if (mitra[0] === 0) {
+          return res.status(400).json({
+            success: false,
+            message: "bad request, the mitra not found",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "updated successfully",
+        });
+      } catch (error) {
+        res.status(500).json({
+          message: "internal server error",
+        });
+      }
     }
   }
 );
@@ -194,14 +229,21 @@ controllerMitra.delete = async (req, res) => {
       where: { id: req.params.id },
     });
 
+    if (mitra === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "bad request, the mitra not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: "The porter deleted successfully",
+      message: "the mitra deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: true,
-      message: "500 internal server error",
+      message: "internal server error",
     });
   }
 };
