@@ -11,68 +11,102 @@ controllerCategory.post = async (req, res) => {
   const { category_name, mitra_price, client_price, description } = req.body;
   if (!(category_name && mitra_price && client_price && description)) {
     return res.status(400).json({
-      message: "Some input are required",
+      success: false,
+      message: "bad request, some input are required",
     });
   }
 
-  try {
-    const category = await models.category.create({
-      category_name: category_name,
-      mitra_price: mitra_price,
-      client_price: client_price,
-      description: description,
-      admin_id: admin_id,
+  const category = await models.category.findAll({
+    where: { category_name },
+  });
+
+  if (category.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: "bad request, the category name has already been used",
     });
-    res.status(201).json({
-      message: "The category added successfully",
-    });
-  } catch (error) {
-    res.status(404).json({
-      message: error.message,
-    });
+  } else {
+    try {
+      const category = await models.category.create({
+        category_name,
+        mitra_price,
+        client_price,
+        description,
+        admin_id,
+      });
+      res.status(201).json({
+        success: true,
+        message: "the category added successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "internal server error",
+      });
+    }
   }
 };
 
 // get all categories request
 controllerCategory.getAll = async (req, res) => {
+  await models.category.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
   try {
-    const categories = await models.category.findAll();
+    const categories = await models.category.findAll({
+      include: [{ model: models.admin }],
+    });
     if (categories.length > 0) {
       res.status(200).json({
         succes: true,
-        message: "All categories successfully obtained",
+        message: "all categories successfully obtained",
         data: categories,
       });
     } else {
       res.status(200).json({
         succes: true,
-        message: "The Categories not found",
+        message: "empty categories data",
+        data: [],
       });
     }
   } catch (error) {
-    res.status(404).json({
+    res.status(500).json({
       succes: false,
-      message: error.message,
+      message: "internal server error",
     });
   }
 };
 
 // get one category by id
 controllerCategory.getOneCategory = async (req, res) => {
+  await models.category.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
   try {
     const categories = await models.category.findAll({
+      include: [{ model: models.admin }],
       where: { id: req.params.id },
     });
     if (categories.length > 0) {
       res.status(200).json({
         succes: true,
-        message: "All categories successfully obtained",
+        message: "all categories successfully obtained",
         data: categories,
       });
     } else {
       res.status(200).json({
         succes: true,
-        message: "The Categories not found",
+        message: "the category not found",
+        data: [],
       });
     }
   } catch (error) {
@@ -88,34 +122,53 @@ controllerCategory.put = async (req, res) => {
   const { category_name, mitra_price, client_price, description } = req.body;
   if (!(category_name && mitra_price && client_price && description)) {
     return res.status(400).json({
-      message: "Some input are required",
+      success: false,
+      message: "Bad request, some input are required",
     });
   }
 
-  try {
-    const category = await models.category.update(
-      {
-        category_name: category_name,
-        mitra_price: mitra_price,
-        client_price: client_price,
-        description: description,
-      },
-      {
-        where: {
-          id: req.params.id,
-        },
-      }
-    );
+  const category = await models.category.findAll({
+    where: { category_name },
+  });
 
-    res.status(200).json({
-      success: true,
-      message: "Succes updated",
-    });
-  } catch (error) {
-    res.status(500).json({
+  if (category.length > 0) {
+    return res.status(400).json({
       success: false,
-      message: "500 internal server error",
+      message: "bad request, the category name has already been used",
     });
+  } else {
+    try {
+      const category = await models.category.update(
+        {
+          category_name: category_name,
+          mitra_price: mitra_price,
+          client_price: client_price,
+          description: description,
+        },
+        {
+          where: {
+            id: req.params.id,
+          },
+        }
+      );
+
+      if (category[0] === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "bad request, the category not found",
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        message: "success updated",
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "internal server error",
+      });
+    }
   }
 };
 
@@ -127,14 +180,22 @@ controllerCategory.delete = async (req, res) => {
         id: req.params.id,
       },
     });
+
+    if (category === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "bad request, the category not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: "data deleted successfully",
+      message: "Deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "500 internal server error",
+      message: "Internal server error",
     });
   }
 };

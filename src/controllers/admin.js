@@ -49,11 +49,17 @@ controllerAdmin.getOneAdmin = async (req, res) => {
     foreignKey: { name: "admin_id" },
   });
 
+  await models.admin.hasMany(models.mitra, {
+    sourceKey: "id",
+    foreignKey: { name: "admin_id" },
+  });
+
   try {
     const admin = await models.admin.findAll({
       include: [
         { model: models.product },
         { model: models.category },
+        { model: models.porter },
         { model: models.porter },
       ],
       where: { id: req.params.id },

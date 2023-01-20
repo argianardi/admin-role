@@ -1,4 +1,4 @@
-const models = require("../../configs/models/index");
+const models = require("../configs/models/index");
 const controllersAdminAuth = {};
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -8,7 +8,8 @@ controllersAdminAuth.login = async (req, res) => {
   const { email, password } = req.body;
   if (!(email && password)) {
     return res.status(400).json({
-      message: "Some input are required",
+      success: false,
+      message: "Bad request: some input are required",
     });
   }
 
@@ -42,21 +43,21 @@ controllersAdminAuth.login = async (req, res) => {
           });
         }
       } else {
-        res.status(404).json({
+        res.status(400).json({
           success: false,
-          message: "Password doesn't match",
+          message: "Bad request: password doesn't match",
         });
       }
     } else {
-      res.status(404).json({
+      res.status(400).json({
         success: false,
-        message: "The User not registered!!",
+        message: "Bad request: the User not registered",
       });
     }
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "500 internet server error",
+      message: "Internal server error",
     });
   }
 };
@@ -65,18 +66,19 @@ controllersAdminAuth.register = async (req, res) => {
   const { name, email, password } = req.body;
   if (!(name && email && password)) {
     return res.status(400).json({
-      message: "Some input are required",
+      false: false,
+      message: "Bad Request: some input are required",
     });
   }
 
   const admin = await models.admin.findAll({
     where: { email },
   });
-  console.log(admin);
+
   if (admin.length > 0) {
     return res
-      .status(201)
-      .json({ message: "The email is already registered!!" });
+      .status(400)
+      .json({ success: false, message: "The email is already registered!!" });
   } else {
     // bcrypt
     const salt = bcrypt.genSaltSync(10);
@@ -90,11 +92,13 @@ controllersAdminAuth.register = async (req, res) => {
         email,
       });
       res.status(201).json({
+        success: false,
         message: "Registered successfully",
       });
     } catch (error) {
-      res.status(404).json({
-        message: error.message,
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
       });
     }
   }

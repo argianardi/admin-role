@@ -8,9 +8,10 @@ const validateAuth = {
       if (verifiedToken) {
         next();
       }
-    } catch (errror) {
+    } catch (error) {
       res.status(401).json({
-        message: "Access token invalid",
+        success: false,
+        message: "Invalid access token",
       });
     }
   },

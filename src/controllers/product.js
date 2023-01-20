@@ -6,58 +6,6 @@ const app = express();
 const controllerProduct = {};
 const jwt = require("jsonwebtoken");
 
-// get all products request
-controllerProduct.getAll = async (req, res) => {
-  try {
-    const products = await models.product.findAll();
-    if (products.length > 0) {
-      res.status(200).json({
-        succes: true,
-        message: "All products successfully obtained",
-        data: products,
-      });
-    } else {
-      res.status(200).json({
-        succes: true,
-        message: "The products not found",
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      succes: false,
-      message: "500 internal server error",
-    });
-  }
-};
-
-// get one product by id request
-controllerProduct.getOneProduct = async (req, res) => {
-  try {
-    const product = await models.product.findAll({
-      where: { id: req.params.id },
-    });
-
-    if (product.length > 0) {
-      res.status(200).json({
-        success: true,
-        message: "The product successfully obtained",
-        data: product,
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "The product not found",
-        data: [],
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "500 internal server error",
-    });
-  }
-};
-
 // post request
 controllerProduct.post = app.post(
   "/",
@@ -66,36 +14,107 @@ controllerProduct.post = app.post(
     const token = req.headers.authorization.split(" ")[1];
     const verifiedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
     const admin_id = verifiedToken.id;
-
     const { product_name, stock, price, description } = req.body;
     const uploadImage = await cloudinary.uploader.upload(req.file.path);
 
     if (!(product_name && uploadImage && stock && price && description)) {
       return res.status(400).json({
-        message: "Some input are required",
+        message: "bad request, some input are required",
       });
     }
 
     try {
       const product = await models.product.create({
-        product_name: product_name,
+        product_name,
         image: uploadImage.url,
-        stock: stock,
-        price: price,
-        description: description,
-        admin_id: admin_id,
+        stock,
+        price,
+        description,
+        admin_id,
       });
       res.status(201).json({
         success: true,
-        message: "The product created successfully",
+        message: "the product created successfully",
       });
     } catch (error) {
       res.status(500).json({
-        message: "500 internal server error",
+        message: "internal server error",
       });
     }
   }
 );
+
+// get all products request
+controllerProduct.getAll = async (req, res) => {
+  await models.product.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
+  try {
+    const products = await models.product.findAll({
+      include: [{ model: models.admin }],
+    });
+    if (products.length > 0) {
+      res.status(200).json({
+        succes: true,
+        message: "all products successfully obtained",
+        data: products,
+      });
+    } else {
+      res.status(200).json({
+        succes: true,
+        message: "empty products data",
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      succes: false,
+      message: "internal server error",
+    });
+  }
+};
+
+// get one product by id request
+controllerProduct.getOneProduct = async (req, res) => {
+  await models.product.hasOne(models.admin, {
+    sourceKey: "admin_id",
+    foreignKey: {
+      name: "id",
+      allowNull: true,
+    },
+  });
+
+  try {
+    const product = await models.product.findAll({
+      include: [{ model: models.admin }],
+      where: { id: req.params.id },
+    });
+
+    if (product.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "the product successfully obtained",
+        data: product,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "empty the product data",
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "internal server error",
+    });
+  }
+};
 
 // put one product by id request
 controllerProduct.put = app.put(
@@ -107,7 +126,7 @@ controllerProduct.put = app.put(
 
     if (!(product_name && uploadImage && stock && price && description)) {
       return res.status(400).json({
-        message: "Some input are required",
+        message: "bad request, some input are required",
       });
     }
 
@@ -126,13 +145,21 @@ controllerProduct.put = app.put(
           },
         }
       );
-      res.status(200).json({
+
+      if (product[0] === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "bad request, the product not found",
+        });
+      }
+
+      res.status(201).json({
         success: true,
-        message: "Succes updated",
+        message: "success updated",
       });
     } catch (error) {
       res.status(500).json({
-        message: "500 internal server error",
+        message: "internal server error",
       });
     }
   }
@@ -146,14 +173,22 @@ controllerProduct.delete = async (req, res) => {
         id: req.params.id,
       },
     });
+
+    if (product === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "bad request, the product not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: "data deleted successfully",
+      message: "deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "500 internal server error",
+      message: "internal server error",
     });
   }
 };
