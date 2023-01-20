@@ -21,6 +21,7 @@ const mitra = db.define(
     city_id: { type: Sequelize.INTEGER },
     district: { type: Sequelize.STRING },
     street: { type: Sequelize.STRING },
+    admin_id: { type: Sequelize.STRING },
     createdAt: { type: Sequelize.DATE },
     updatedAt: { type: Sequelize.DATE },
   },
