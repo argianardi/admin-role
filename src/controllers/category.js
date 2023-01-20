@@ -12,7 +12,7 @@ controllerCategory.post = async (req, res) => {
   if (!(category_name && mitra_price && client_price && description)) {
     return res.status(400).json({
       success: false,
-      message: "Bad request, some input are required",
+      message: "bad request, some input are required",
     });
   }
 
@@ -23,25 +23,25 @@ controllerCategory.post = async (req, res) => {
   if (category.length > 0) {
     return res.status(400).json({
       success: false,
-      message: "Bad request, the category name has already been used",
+      message: "bad request, the category name has already been used",
     });
   } else {
     try {
       const category = await models.category.create({
-        category_name: category_name,
-        mitra_price: mitra_price,
-        client_price: client_price,
-        description: description,
-        admin_id: admin_id,
+        category_name,
+        mitra_price,
+        client_price,
+        description,
+        admin_id,
       });
       res.status(201).json({
         success: true,
-        message: "The category added successfully",
+        message: "the category added successfully",
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: "Internal server error",
+        message: "internal server error",
       });
     }
   }
@@ -54,19 +54,20 @@ controllerCategory.getAll = async (req, res) => {
     if (categories.length > 0) {
       res.status(200).json({
         succes: true,
-        message: "All categories successfully obtained",
+        message: "all categories successfully obtained",
         data: categories,
       });
     } else {
       res.status(200).json({
         succes: true,
         message: "empty categories data",
+        data: [],
       });
     }
   } catch (error) {
     res.status(500).json({
       succes: false,
-      message: "Internal server error",
+      message: "internal server error",
     });
   }
 };
@@ -80,13 +81,14 @@ controllerCategory.getOneCategory = async (req, res) => {
     if (categories.length > 0) {
       res.status(200).json({
         succes: true,
-        message: "All categories successfully obtained",
+        message: "all categories successfully obtained",
         data: categories,
       });
     } else {
       res.status(200).json({
         succes: true,
-        message: "The Categories not found",
+        message: "the category not found",
+        data: [],
       });
     }
   } catch (error) {
@@ -114,7 +116,7 @@ controllerCategory.put = async (req, res) => {
   if (category.length > 0) {
     return res.status(400).json({
       success: false,
-      message: "Bad request, the category name has already been used",
+      message: "bad request, the category name has already been used",
     });
   } else {
     try {
@@ -132,14 +134,21 @@ controllerCategory.put = async (req, res) => {
         }
       );
 
+      if (category[0] === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "bad request, the category not found",
+        });
+      }
+
       res.status(201).json({
         success: true,
-        message: "Succes updated",
+        message: "success updated",
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: "Internal server error",
+        message: "internal server error",
       });
     }
   }
@@ -153,6 +162,14 @@ controllerCategory.delete = async (req, res) => {
         id: req.params.id,
       },
     });
+
+    if (category === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "bad request, the category not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: "Deleted successfully",
