@@ -32,30 +32,41 @@ controllerPorter.post = async (req, res) => {
     )
   ) {
     return res.status(400).json({
-      message: "Some input are required",
+      message: "bad request, some input are required",
     });
   }
 
-  try {
-    const porter = await models.porter.create({
-      name,
-      email,
-      password,
-      no_telp,
-      province_id,
-      city_id,
-      district,
-      street,
-      admin_id: admin_id,
+  const porter = await models.porter.findAll({
+    where: { email },
+  });
+
+  if (porter.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: "bad request, the email has already been used",
     });
-    res.status(201).json({
-      success: true,
-      message: "The porter added successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "500 internal server error",
-    });
+  } else {
+    try {
+      const porter = await models.porter.create({
+        name,
+        email,
+        password,
+        no_telp,
+        province_id,
+        city_id,
+        district,
+        street,
+        admin_id: admin_id,
+      });
+      res.status(201).json({
+        success: true,
+        message: "The porter added successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "500 internal server error",
+      });
+    }
   }
 };
 
@@ -66,20 +77,20 @@ controllerPorter.getAll = async (req, res) => {
     if (porters.length > 0) {
       res.status(200).json({
         success: true,
-        message: "All porters successfully obtained",
+        message: "all porters successfully obtained",
         data: porters,
       });
     } else {
       res.status(200).json({
         success: true,
-        message: "Porters not found",
+        message: "empty porters data",
         data: [],
       });
     }
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "500 internal server error",
+      message: "internal server error",
     });
   }
 };
@@ -94,20 +105,20 @@ controllerPorter.getOnePorter = async (req, res) => {
     if (porter.length > 0) {
       res.status(200).json({
         success: true,
-        message: "The porter successfully obtained",
+        message: "the porter successfully obtained",
         data: porter,
       });
     } else {
       res.status(200).json({
         success: true,
-        message: "The porter not found",
+        message: "the porter not found",
         data: [],
       });
     }
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "500 internal server error",
+      message: "internal server error",
     });
   }
 };
@@ -138,32 +149,51 @@ controllerPorter.put = async (req, res) => {
     )
   ) {
     return res.status(400).json({
-      message: "Some input are required",
+      message: "bad request, some input are required",
     });
   }
 
-  try {
-    const porter = await models.porter.update(
-      {
-        name,
-        email,
-        password,
-        no_telp,
-        province_id,
-        city_id,
-        district,
-        street,
-      },
-      { where: { id: req.params.id } }
-    );
-    res.status(200).json({
-      success: true,
-      message: "The porter updated successfully",
+  const porter = await models.porter.findAll({
+    where: { email },
+  });
+
+  if (porter.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: "bad request, the email has already been used",
     });
-  } catch (error) {
-    res.status(500).json({
-      message: "500 internal server error",
-    });
+  } else {
+    try {
+      const porter = await models.porter.update(
+        {
+          name,
+          email,
+          password,
+          no_telp,
+          province_id,
+          city_id,
+          district,
+          street,
+        },
+        { where: { id: req.params.id } }
+      );
+
+      if (porter[0] === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "bad request, the porter not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "the porter updated successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "internal server error",
+      });
+    }
   }
 };
 
@@ -174,6 +204,13 @@ controllerPorter.delete = async (req, res) => {
       where: { id: req.params.id },
     });
 
+    if (porter === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "bad request, the porter not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: "The porter deleted successfully",
@@ -181,7 +218,7 @@ controllerPorter.delete = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: true,
-      message: "500 internal server error",
+      message: "internal server error",
     });
   }
 };
