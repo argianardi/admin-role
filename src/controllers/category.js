@@ -12,7 +12,7 @@ controllerCategory.post = async (req, res) => {
   if (!(category_name && mitra_price && client_price && description)) {
     return res.status(400).json({
       success: false,
-      message: "Bad request: some input are required",
+      message: "Bad request, some input are required",
     });
   }
 
@@ -23,7 +23,7 @@ controllerCategory.post = async (req, res) => {
   if (category.length > 0) {
     return res.status(400).json({
       success: false,
-      message: "Bad request: the category name has already been used",
+      message: "Bad request, the category name has already been used",
     });
   } else {
     try {
@@ -41,7 +41,7 @@ controllerCategory.post = async (req, res) => {
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error.message,
+        message: "Internal server error",
       });
     }
   }
@@ -103,7 +103,7 @@ controllerCategory.put = async (req, res) => {
   if (!(category_name && mitra_price && client_price && description)) {
     return res.status(400).json({
       success: false,
-      message: "Bad request: some input are required",
+      message: "Bad request, some input are required",
     });
   }
 
@@ -114,7 +114,7 @@ controllerCategory.put = async (req, res) => {
   if (category.length > 0) {
     return res.status(400).json({
       success: false,
-      message: "Bad request: the category name has already been used",
+      message: "Bad request, the category name has already been used",
     });
   } else {
     try {
